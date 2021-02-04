@@ -1,0 +1,151 @@
+---
+title: "tiktok"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+suppressMessages(library(tidyverse))
+suppressMessages(library(ggthemes))
+df <- read.csv('https://raw.githubusercontent.com/calvinsmith625/TikTok/main/Spotify_API/tiktok_songs.csv')
+```
+
+```{r}
+gg_dot <- df %>%
+  
+  arrange(danceability) %>%
+  
+  ggplot() +
+  
+  theme_classic() +
+  theme(axis.title = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line = element_blank(),
+        axis.text.y = element_text(face = 'bold', size = 11),
+        legend.position = 'none') +
+  
+  
+  
+  geom_point(aes(x = .4, y = X),
+             size = 0, col = "white") +
+  
+  
+  geom_hline(yintercept = 1:5, col = "grey80") +
+  
+  
+  geom_point(aes(x = danceability, y = X), 
+             size = 17, col = "dodgerblue", alpha=.6) +
+  
+  geom_point(aes(x = energy, y = X),
+             size = 17, col = "orange", alpha=.6) +
+  geom_text(aes(x = danceability, y = X, 
+                label = paste0(round(danceability, 2))),
+            col = "white", size=6) +
+  
+  geom_text(aes(x = energy, y = X, 
+                label = paste0(round(energy, 2))),
+            col = "white", size=6) +
+  
+  geom_text(aes(x = x, y = y, label = label, col = label),
+            data.frame(x = c(.76, .59), y = 5.2, 
+                       label = c("Danceability", "Energy")), size = 6, fontface='bold') +
+  scale_color_manual(values = c("dodgerblue", "orange"), guide = "none") +
+  xlim(.4, .92)
+gg_dot
+ggsave('ggdot.png', gg_dot, dpi = 450, width = 20, height = 14, units = 'cm')
+```
+
+
+```{r}
+plt_one <- df %>%
+  select(X, danceability, energy) %>%
+  reshape2::melt(id.vars = 'X') %>%
+  ggplot(aes(x=X, y=value, col=variable, fill=variable)) +
+  geom_bar(alpha=.3, stat='identity', position='dodge') +
+  geom_text(aes(label=variable), position=position_dodge(width=0.9), vjust=-.5, fontface='bold', size=3) +
+  theme_classic() +
+  scale_fill_manual(values = c('dodgerblue', 'orange')) +
+  scale_color_manual(values = c('dodgerblue', 'orange')) +
+  theme(legend.position = 'none',
+        axis.title = element_text(size = 12, face = 'bold'),
+        axis.text = element_text(size = 9),
+        plot.title = element_text(size = 16, hjust = 0.5, face = 'bold'),
+        plot.subtitle = element_text(size = 14, hjust = 0.5),
+        plot.caption = element_text(size = 12),
+        axis.text.x = element_text(angle = 10, face = 'bold', hjust = .8, size=10),
+        axis.line = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x='',
+       y='Score for Danceability and Energy') +
+  geom_hline(yintercept = .5, linetype='dashed')
+plt_one
+# ggsave('plt_one.png', plt_one, dpi = 450, width = 16, height = 14, units = 'cm')
+?geom_text
+```
+
+```{r}
+gg_dot_2 <- df %>%
+  
+  arrange(valence) %>%
+  
+  ggplot() +
+  
+  theme_classic() +
+  theme(axis.title = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line = element_blank(),
+        axis.text.y = element_text(face = 'bold', size = 11),
+        legend.position = 'none') +
+  
+  
+  
+  geom_point(aes(x = .4, y = X),
+             size = 0, col = "white") +
+  
+  
+  geom_hline(yintercept = 1:5, col = "grey80") +
+  
+  
+  geom_point(aes(x = valence, y = X, col=X), 
+             size = 17, alpha = .7) +
+
+  geom_text(aes(x = valence, y = X, 
+                label = paste0(round(valence, 2))),
+            col = "white", size=6) +
+  
+  geom_text(x = .42, y = 5.4, label = 'Valence', col='black',
+            fontface='bold', size=8) +
+  xlim(.1, .92) +
+  scale_color_brewer(palette = 'Set1')
+gg_dot_2
+ggsave('ggdot2.png', gg_dot_2, dpi = 450, width = 20, height = 14, units = 'cm')
+```
+
+
+```{r}
+plt_two <- df %>%
+  ggplot(aes(x=X)) +
+  geom_col(aes(y=valence, col=X, fill=X), alpha=.3) +
+  theme_classic() +
+  scale_fill_brewer(palette = 'Set1') +
+  scale_color_brewer(palette = 'Set1') +
+  theme(legend.position = 'none',
+        axis.title = element_text(size = 12, face = 'bold'),
+        axis.text = element_text(size = 9),
+        plot.title = element_text(size = 16, hjust = 0.5, face = 'bold'),
+        plot.subtitle = element_text(size = 14, hjust = 0.5),
+        plot.caption = element_text(size = 12),
+        axis.text.x = element_text(angle = 10, face = 'bold', hjust = .8, size=9),
+        axis.line = element_blank()) +
+  labs(x='',
+       y='Valence') +
+  geom_hline(yintercept = .5, linetype='dashed')
+plt_two
+ggsave('plt_one.png', plt_one, dpi = 450, width = 16, height = 14, units = 'cm')
+```
+
+
+
